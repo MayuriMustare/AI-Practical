@@ -1,0 +1,36 @@
+% Define the graph edges and their costs. 
+edge(a, b, 1). 
+edge(a, c, 3). 
+edge(b, d, 1). 
+edge(b, e, 6). 
+edge(c, f, 5).
+edge(d, g, 3). 
+edge(e, g, 2). 
+edge(f, g, 1). 
+ 
+% Define heuris c values for each node. 
+heuris c(a, 6).
+heuris c(b, 5). 
+heuris c(c, 4). 
+heuris c(d, 3).
+heuris c(e, 2).
+heuris c(f, 3). 
+heuris c(g, 0). % Goal node has heuris c 0 
+ 
+% Best First Search rule 
+best_first_search(Start, Goal, Path, Cost) :-  
+best_first_recursive([[Start, 0]], Goal, [], Path, Cost). 
+ 
+% Recursive Best First Search
+best_first_recursive([[Goal, Cost] | _], Goal, _, [Goal], Cost). 
+best_first_recursive([[Current, CurrentCost] | RestQueue], Goal, Visited, [Current | Path], Cost) :- 
+    findall( 
+        [Next, NewCost], 
+        (edge(Current, Next, StepCost), 
+         \+ member(Next, Visited), 
+         heuris c(Next, H), 
+         NewCost is CurrentCost + StepCost + H),   
+NextNodes), 
+    append(RestQueue, NextNodes, Queue),  
+sort(2, @=<, Queue, SortedQueue), 
+best_first_recursive(SortedQueue, Goal, [Current | Visited], Path, Cost). 
