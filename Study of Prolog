@@ -1,0 +1,16 @@
+father(john, mary).
+mother(mary, alice). 
+parent(X, Y) :- father(X, Y). 
+parent(X, Y) :- mother(X, Y). 
+factorial(0, 1). 
+factorial(N, Result) :-  
+N > 0, 
+    N1 is N - 1,     
+factorial(N1, SubResult), 
+    Result is N * SubResult. 
+member(X, [X|_]). 
+member(X, [_|Tail]) :- member(X, Tail). 
+ 
+append([], List, List). 
+append([Head|Tail], List, [Head|Result]) :-    
+append(Tail, List, Result). 
