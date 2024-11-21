@@ -1,4 +1,3 @@
-# AI-Practical
 eight_queens(Board) :- 
 length(Board, 8), 
 place_queens(Board), 
