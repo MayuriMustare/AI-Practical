@@ -1,0 +1,46 @@
+% Define the goal state. goal([1, 2, 3, 4, 5, 6, 7, 8, 0]). 
+ 
+% Calculate Manha an distance as a heuris c. 
+manha an(State, Distance) :- 
+    goal(Goal),    
+    manha an_distance(State, Goal, 0, Distance). 
+ 
+manha an_distance([], [], D, D). 
+manha an_distance([Tile | RestTiles],
+[TileGoal | RestGoal], Acc, Distance) :- 
+    ( Tile =\= 0 ->       
+    index(Tile, Goal, IndexTile),      
+    index(TileGoal, Goal, IndexGoal), 
+        PosX is IndexTile mod 3, 
+        PosY is IndexTile // 3, 
+        GoalX is IndexGoal mod 3, 
+        GoalY is IndexGoal // 3, 
+        StepDistance is abs(PosX - GoalX) + abs(PosY - GoalY), 
+        NewAcc is Acc + StepDistance 
+    ;   NewAcc = Acc ),  
+    manha an_distance(RestTiles, RestGoal, NewAcc, Distance). 
+ 
+index(Element, List, Index) :- nth0(Index, List, Element). 
+ 
+% Define possible moves for les in the puzzle.
+move([0, B, C, D, E, F, G, H, I], [B, 0, C, D, E, F, G, H, I]).
+move([A, 0, C, D, E, F, G, H, I], [A, C, 0, D, E, F, G, H, I]).
+move([A, B, 0, D, E, F, G, H, I], [A, B, F, D, E, 0, G, H, I]). 
+% Addi onal moves here... 
+ 
+% Best First Search for solving 8-puzzle 
+best_first_puzzle(Start, Path, Cost) :-    
+manha an(Start, StartH), 
+    best_first([[Start, [], StartH]], [], Path, Cost). 
+best_first([[State, PathSoFar, _] | _], _, [State | PathSoFar], 0) :-   
+goal(State).
+best_first([[State, PathSoFar, _] | Rest], Visited, Solu on, Cost) :- 
+    findall( 
+        [NextState, [State | PathSoFar], NextH], 
+        (move(State, NextState),   
+        \+ member(NextState, Visited),     
+        manha an(NextState, NextH)),    
+        Moves), 
+    append(Rest, Moves, Queue),    
+    sort(3, @=<, Queue, SortedQueue),   
+    best_first(SortedQueue, [State | Visited], Solu on, Cost). 
